@@ -135,7 +135,6 @@ function draw() {
 }
 
 function drawMap(g: CanvasRenderingContext2D) {
-  // Draw map
   for (let y = 0; y < map.length; y++) {
     for (let x = 0; x < map[y].length; x++) {
       if (map[y][x] === Tile.FLUX) g.fillStyle = "#ccffcc";
@@ -156,7 +155,6 @@ function drawMap(g: CanvasRenderingContext2D) {
 }
 
 function drawPlayer(g: CanvasRenderingContext2D) {
-  // Draw player
   g.fillStyle = "#ff0000";
   g.fillRect(playerx * TILE_SIZE, playery * TILE_SIZE, TILE_SIZE, TILE_SIZE);
 }

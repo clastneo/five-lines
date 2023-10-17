@@ -17,7 +17,7 @@ enum RawTile {
   LOCK2,
 }
 
-interface Tile2 {
+interface Tile {
   isAir(): boolean;
   isFlux(): boolean;
   isUnbreakable(): boolean;
@@ -32,7 +32,7 @@ interface Tile2 {
   isLock2(): boolean;
 }
 
-class Air implements Tile2 {
+class Air implements Tile {
   isAir() {
     return true;
   }
@@ -71,7 +71,7 @@ class Air implements Tile2 {
   }
 }
 
-class Flux implements Tile2 {
+class Flux implements Tile {
   isAir() {
     return false;
   }
@@ -109,7 +109,7 @@ class Flux implements Tile2 {
     return false;
   }
 }
-class Unbreakable implements Tile2 {
+class Unbreakable implements Tile {
   isAir() {
     return false;
   }
@@ -148,7 +148,7 @@ class Unbreakable implements Tile2 {
   }
 }
 
-class Player implements Tile2 {
+class Player implements Tile {
   isAir() {
     return false;
   }
@@ -186,7 +186,7 @@ class Player implements Tile2 {
     return false;
   }
 }
-class Stone implements Tile2 {
+class Stone implements Tile {
   isAir() {
     return false;
   }
@@ -224,7 +224,7 @@ class Stone implements Tile2 {
     return false;
   }
 }
-class FallingStone implements Tile2 {
+class FallingStone implements Tile {
   isAir() {
     return false;
   }
@@ -262,7 +262,7 @@ class FallingStone implements Tile2 {
     return false;
   }
 }
-class Box implements Tile2 {
+class Box implements Tile {
   isAir() {
     return false;
   }
@@ -300,7 +300,7 @@ class Box implements Tile2 {
     return false;
   }
 }
-class FallingBox implements Tile2 {
+class FallingBox implements Tile {
   isAir() {
     return false;
   }
@@ -338,7 +338,7 @@ class FallingBox implements Tile2 {
     return false;
   }
 }
-class Key1 implements Tile2 {
+class Key1 implements Tile {
   isAir() {
     return false;
   }
@@ -376,7 +376,7 @@ class Key1 implements Tile2 {
     return false;
   }
 }
-class Key2 implements Tile2 {
+class Key2 implements Tile {
   isAir() {
     return false;
   }
@@ -414,7 +414,7 @@ class Key2 implements Tile2 {
     return false;
   }
 }
-class Lock1 implements Tile2 {
+class Lock1 implements Tile {
   isAir() {
     return false;
   }
@@ -452,7 +452,7 @@ class Lock1 implements Tile2 {
     return false;
   }
 }
-class Lock2 implements Tile2 {
+class Lock2 implements Tile {
   isAir() {
     return false;
   }
@@ -580,7 +580,7 @@ enum RawInput {
 
 let playerx = 1;
 let playery = 1;
-let map: Tile[][] = [
+let rawMap: RawTile[][] = [
   [2, 2, 2, 2, 2, 2, 2, 2],
   [2, 3, 0, 1, 1, 2, 0, 2],
   [2, 4, 2, 6, 1, 2, 0, 2],
@@ -588,6 +588,53 @@ let map: Tile[][] = [
   [2, 4, 1, 1, 1, 9, 0, 2],
   [2, 2, 2, 2, 2, 2, 2, 2],
 ];
+
+let map: Tile[][];
+
+function assertExhausted(x: never): never {
+  throw new Error("Unexpected object: " + x);
+}
+
+function transformTile(tile: RawTile) {
+  switch (tile) {
+    case RawTile.AIR:
+      return new Air();
+    case RawTile.PLAYER:
+      return new Player();
+    case RawTile.UNBREAKABLE:
+      return new Unbreakable();
+    case RawTile.STONE:
+      return new Stone();
+    case RawTile.FALLING_STONE:
+      return new FallingStone();
+    case RawTile.BOX:
+      return new Box();
+    case RawTile.FALLING_BOX:
+      return new FallingBox();
+    case RawTile.FLUX:
+      return new Flux();
+    case RawTile.KEY1:
+      return new Key1();
+    case RawTile.KEY2:
+      return new Key2();
+    case RawTile.LOCK1:
+      return new Lock1();
+    case RawTile.LOCK2:
+      return new Lock2();
+    default:
+      assertExhausted(tile);
+  }
+}
+
+function transformMap() {
+  map = new Array(rawMap.length);
+  for (let y = 0; y < rawMap.length; y++) {
+    map[y] = new Array(rawMap[y].length);
+    for (let x = 0; x < rawMap[y].length; x++) {
+      map[y][x] = transformTile(rawMap[y][x]);
+    }
+  }
+}
 
 let inputs: Input[] = [];
 
@@ -747,6 +794,7 @@ function gameLoop() {
 }
 
 window.onload = () => {
+  transformMap();
   gameLoop();
 };
 
